@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+import moonTextureMap from './public/moon.jpg'
+import spaceTextureMap from './public/space.jpg'
+import normalTextureMap from './public/normal.png'
+
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -53,12 +57,12 @@ function addStar() {
 Array(200).fill().forEach(addStar);
 
 
-const spaceTexture = new THREE.TextureLoader().load('./public/space.jpg');
+const spaceTexture = new THREE.TextureLoader().load(spaceTextureMap);
 scene.background = spaceTexture;
 
 
-const moonTexture = new THREE.TextureLoader().load('./public/moon.jpg')
-const normalTexture = new THREE.TextureLoader().load('./public/normal.png')
+const moonTexture = new THREE.TextureLoader().load(moonTextureMap)
+const normalTexture = new THREE.TextureLoader().load(normalTextureMap)
 const moon = new THREE.Mesh(
   new THREE.SphereGeometry(3, 64, 64),
   new THREE.MeshStandardMaterial({
