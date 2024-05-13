@@ -26,6 +26,10 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.render(scene, camera)
 
 
+// CONTROLS
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enablePan = false;
+
 // OBJECTS
 
 // -- light
@@ -39,7 +43,6 @@ scene.add(sunLight)
 const gridHelper = new THREE.GridHelper(200, 50);
 // scene.add(gridHelper);
 
-const controls = new OrbitControls(camera, renderer.domElement);
 
 
 // Stars generator
@@ -59,7 +62,7 @@ Array(300).fill().forEach(addStar);
 // -- sun
 const sunTexture = new THREE.TextureLoader().load(sunTextureMap)
 const sun = new THREE.Mesh(
-  new THREE.SphereGeometry(20, 64, 64),
+  new THREE.SphereGeometry(20, 128, 128),
   new THREE.MeshBasicMaterial({
     map: sunTexture
   })
