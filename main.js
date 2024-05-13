@@ -5,6 +5,7 @@ import moonTextureMap from './public/moon.jpg'
 import normalTextureMap from './public/normal.png'
 import earthTextureMap from './public/earth.jpg'
 import sunTextureMap from './public/sun.jpg'
+import mercuryTextureMap from './public/mercury.jpg'
 
 const scene = new THREE.Scene();
 
@@ -38,13 +39,12 @@ controls.maxDistance = 600;
 const ambientLight = new THREE.AmbientLight(0xffffff);
 // scene.add(ambientLight);
 
-const sunLight = new THREE.PointLight(0xffffff, 15000, 3000)
+const sunLight = new THREE.PointLight(0xffffff, 20000, 10000)
 scene.add(sunLight)
 
 // HELPERS
 const gridHelper = new THREE.GridHelper(200, 50);
 // scene.add(gridHelper);
-
 
 
 // Stars generator
@@ -61,6 +61,17 @@ function addStar() {
 
 Array(300).fill().forEach(addStar);
 
+function planetObjGenerator(size, segments, texture) {
+  const objTexture = new THREE.TextureLoader().load(texture);
+  const obj = new THREE.Mesh(
+    new THREE.SphereGeometry(size, segments, segments),
+    new THREE.MeshStandardMaterial({
+      map: objTexture
+    })
+  )
+  return obj;
+}
+
 // -- sun
 const sunTexture = new THREE.TextureLoader().load(sunTextureMap)
 const sun = new THREE.Mesh(
@@ -70,36 +81,32 @@ const sun = new THREE.Mesh(
   })
 );
 sun.position.set(0, 0, 0)
+
+
 scene.add(sun);
 
 // -- earth
 const earthObj = new THREE.Object3D();
 scene.add(earthObj)
-const earthTexture = new THREE.TextureLoader().load(earthTextureMap)
-const earth = new THREE.Mesh(
-  new THREE.SphereGeometry(6, 64, 64),
-  new THREE.MeshStandardMaterial({
-    map: earthTexture
-  })
-)
-earth.position.set(0, 0, 65)
+const earth = planetObjGenerator(6, 64, earthTextureMap)
+earth.position.set(0, 0, 85)
 earthObj.add(earth)
 
 // -- moon
 const moonObj = new THREE.Object3D();
 earth.add(moonObj)
-const moonTexture = new THREE.TextureLoader().load(moonTextureMap)
-const normalTexture = new THREE.TextureLoader().load(normalTextureMap)
-const moon = new THREE.Mesh(
-  new THREE.SphereGeometry(2, 64, 64),
-  new THREE.MeshStandardMaterial({
-    map: moonTexture,
-    normalMap: normalTexture
-  })
-);
+const moon = planetObjGenerator(2, 64, moonTextureMap);
 moon.position.set(0, 0, 15)
 moonObj.add(moon)
 
+
+// -- mercury
+const mercuryObj = new THREE.Object3D();
+mercuryObj.rotateY(90)
+scene.add(mercuryObj)
+const mercury = planetObjGenerator(4, 64, mercuryTextureMap);
+mercury.position.set(0, 0, 45)
+mercuryObj.add(mercury)
 
 // ANIMATIONS
 function animate() {
@@ -107,8 +114,12 @@ function animate() {
 
   sun.rotateY(0.001)
   moonObj.rotateY(0.0012)
+
   earthObj.rotateY(0.002)
   earth.rotateY(0.0365)
+
+  mercuryObj.rotateY(0.005)
+  mercury.rotateY(0.02)
 
   renderer.render(scene, camera);
 }
