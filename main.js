@@ -29,6 +29,8 @@ renderer.render(scene, camera)
 // CONTROLS
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enablePan = false;
+controls.minDistance = 40;
+controls.maxDistance = 600;
 
 // OBJECTS
 
