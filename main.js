@@ -35,6 +35,13 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.render(scene, camera);
 
+window.onresize = () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.render(scene, camera);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+}
+
 // CONTROLS
 var controls = new OrbitControls(camera, renderer.domElement);
 controls.enablePan = false;
