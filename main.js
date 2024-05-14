@@ -15,7 +15,6 @@ import saturnTextureMap from './public/saturn.jpg'
 import saturnRingTextureMap from './public/saturn.jpg'
 
 const scene = new THREE.Scene();
-
 // DOM elements 
 const cameraResetBtn = document.querySelector('.resetCamera')
 
@@ -34,7 +33,7 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.render(scene, camera)
+renderer.render(scene, camera);
 
 // CONTROLS
 var controls = new OrbitControls(camera, renderer.domElement);
@@ -45,10 +44,10 @@ controls.maxDistance = 600;
 // OBJECTS
 
 // -- light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.05);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.03);
 scene.add(ambientLight);
 
-const sunLight = new THREE.PointLight(0xffffff, 20000, 10000)
+const sunLight = new THREE.PointLight(0xffffff, 25000, 10000)
 scene.add(sunLight)
 
 // HELPERS
@@ -137,6 +136,21 @@ jupiter.position.set(0, 0, 180);
 jupiterObj.add(jupiter);
 
 
+// Lines
+
+function generateLine(sizes) {
+  for (let i = 0; i < sizes.length; i++) {
+    let radius = sizes[i];
+    const line = new THREE.Mesh(
+      new THREE.RingGeometry(radius, radius + 0.5, 128),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide })
+    )
+    line.rotateX(1.55)
+    scene.add(line)
+  }
+}
+generateLine([45, 75, 110, 145, 180])
+
 // Features
 
 function getCameraPositionDiff(sphere) {
@@ -151,7 +165,7 @@ function animateCamera(p, diff) {
     z: p.z + diff,
     duration: 0.5,
     onUpdate: function () {
-        camera.lookAt(p.x, p.y, p.z)
+      camera.lookAt(p.x, p.y, p.z)
     }
   })
 }
@@ -166,7 +180,7 @@ function getCenterPoint(mesh) {
   middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
   middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
 
-  mesh.localToWorld( middle );
+  mesh.localToWorld(middle);
   return middle;
 }
 
@@ -178,9 +192,9 @@ var mouse = new THREE.Vector2();
 function onMouseClick(event) {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-  
+
   raycaster.setFromCamera(mouse, camera);
-  
+
   var intersects = raycaster.intersectObjects(scene.children);
   for (var i = 0; i < intersects.length; i++) {
     cameraLock = intersects[i].object;
@@ -188,8 +202,8 @@ function onMouseClick(event) {
     controls.enabled = false;
   }
 }
-
 window.addEventListener('click', onMouseClick, false);
+
 cameraResetBtn.addEventListener('click', () => {
   cameraLock = undefined;
   cameraResetBtn.setAttribute('hidden', '');
@@ -232,3 +246,5 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate()
+
+
