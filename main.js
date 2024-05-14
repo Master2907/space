@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import gsap from 'gsap'
 
-
 import moonTextureMap from './public/moon.jpg'
 import normalTextureMap from './public/normal.png'
 import earthTextureMap from './public/earth.jpg'
@@ -22,9 +21,7 @@ const cameraResetBtn = document.querySelector('.resetCamera')
 var cameraLock = undefined;
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.setZ(150);
-camera.position.setX(150);
-camera.position.setY(150);
+camera.position.set(150, 150, 150);
 
 // RENDERER
 const renderer = new THREE.WebGLRenderer({
@@ -196,20 +193,33 @@ function getCenterPoint(mesh) {
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 
-function onMouseClick(event) {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
+function onClickEvent(mouse) {
   raycaster.setFromCamera(mouse, camera);
-
   var intersects = raycaster.intersectObjects(scene.children);
+
   for (var i = 0; i < intersects.length; i++) {
     cameraLock = intersects[i].object;
     cameraResetBtn.removeAttribute('hidden');
     controls.enabled = false;
   }
 }
-window.addEventListener('click', onMouseClick, false);
+
+function onMouseClick(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+  onClickEvent(intersects)
+}
+
+function onMobileClick(event) {
+  mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+  mouse.y = - (event.touches[0].clientY / window.innerHeight) * 2 + 1;
+
+  onClickEvent(mouse)
+}
+
+window.addEventListener("click", onMouseClick, false);
+window.addEventListener("touchstart", onMobileClick, false);
 
 cameraResetBtn.addEventListener('click', () => {
   cameraLock = undefined;
@@ -253,5 +263,3 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate()
-
-
