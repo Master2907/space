@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import gsap from 'gsap'
 
 import moonTextureMap from './public/moon.jpg'
@@ -11,7 +12,9 @@ import venusTextureMap from './public/venus.jpg'
 import marsTextureMap from './public/mars.jpg'
 import jupiterTextureMap from './public/jupiter.jpg'
 import saturnTextureMap from './public/saturn.jpg'
-import saturnRingTextureMap from './public/saturn.jpg'
+import saturnRingTextureMap from './public/saturn_ring.png'
+import uranusTextureMap from './public/uranus.jpg'
+import neptunTextureMap from './public/neptun.jpg'
 
 const scene = new THREE.Scene();
 // DOM elements 
@@ -60,17 +63,17 @@ const gridHelper = new THREE.GridHelper(200, 50);
 
 // Stars generator
 function addStar() {
-  const geometry = new THREE.SphereGeometry(0.25, 24, 24);
-  const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const geometry = new THREE.SphereGeometry(0.3, 24, 24);
+  const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
   const star = new THREE.Mesh(geometry, material);
 
-  const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(1000));
+  const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(500));
 
   star.position.set(x, y, z);
   scene.add(star)
 }
 
-Array(500).fill().forEach(addStar);
+Array(700).fill().forEach(addStar);
 
 function planetObjGenerator(size, segments, texture) {
   const objTexture = new THREE.TextureLoader().load(texture);
@@ -80,7 +83,6 @@ function planetObjGenerator(size, segments, texture) {
       map: objTexture
     }));
   obj.clickable = true;
-
   return obj;
 }
 
@@ -143,6 +145,38 @@ jupiter.position.set(0, 0, 180);
 jupiterObj.add(jupiter);
 
 
+// -- saturn
+const saturnObj = new THREE.Object3D();
+scene.add(saturnObj)
+
+const saturn = planetObjGenerator(8, 64, saturnTextureMap);
+saturn.position.set(0, 0, 220)
+saturnObj.add(saturn)
+
+const saturnRingTexture = new THREE.TextureLoader().load(saturnRingTextureMap);
+const saturnRing = new THREE.Mesh(
+  new THREE.RingGeometry(13, 16, 64),
+  new THREE.MeshStandardMaterial({side: THREE.DoubleSide, map: saturnRingTexture})
+)
+
+saturnRing.rotation.x = Math.PI / 2 - 0.5;
+saturnRing.rotation.y = -0.1;
+saturn.add(saturnRing)
+
+// -- uranus
+const uranusObj = new THREE.Object3D();
+scene.add(uranusObj);
+const uranus = planetObjGenerator(5, 64, uranusTextureMap);
+uranus.position.set(0, 0, 260);
+uranusObj.add(uranus);
+
+// -- neptun
+const neptunObj = new THREE.Object3D();
+scene.add(neptunObj);
+const neptun = planetObjGenerator(9, 64, neptunTextureMap);
+neptun.position.set(0, 0, 300);
+neptunObj.add(neptun);
+
 // Lines
 
 function generateLine(sizes) {
@@ -152,17 +186,16 @@ function generateLine(sizes) {
       new THREE.RingGeometry(radius, radius + 0.5, 128),
       new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide })
     )
-    line.rotateX(1.55)
+    line.rotation.x = Math.PI / 2;
     scene.add(line)
   }
 }
-generateLine([45, 75, 110, 145, 180])
+generateLine([45, 75, 110, 145, 180, 220, 260, 300])
 
 // Features
 
 function getCameraPositionDiff(sphere) {
-  const radius = sphere.geometry.parameters.radius
-  return 3 * radius
+  return 3 * sphere.geometry.parameters.radius
 }
 
 function animateCamera(p, diff) {
@@ -201,6 +234,7 @@ function onClickEvent(mouse) {
   var intersects = raycaster.intersectObjects(scene.children);
 
   for (var i = 0; i < intersects.length; i++) {
+    console.log(intersects[i])
     if (intersects[i].object.clickable) {
       cameraLock = intersects[i].object;
       cameraResetBtn.removeAttribute('hidden');
@@ -258,6 +292,13 @@ function animate() {
 
   jupiterObj.rotateY(0.002)
   jupiter.rotateY(0.01)
+
+  saturnObj.rotateY(0.001)
+  saturn.rotateY(0.0005)
+
+  uranusObj.rotateY(0.001)
+
+  neptunObj.rotateY(0.0005)
 
   if (cameraLock != undefined) {
     const diff = getCameraPositionDiff(cameraLock);
