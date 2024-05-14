@@ -61,16 +61,16 @@ const gridHelper = new THREE.GridHelper(200, 50);
 // Stars generator
 function addStar() {
   const geometry = new THREE.SphereGeometry(0.25, 24, 24);
-  const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
   const star = new THREE.Mesh(geometry, material);
 
-  const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(600));
+  const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(1000));
 
   star.position.set(x, y, z);
   scene.add(star)
 }
 
-Array(600).fill().forEach(addStar);
+Array(500).fill().forEach(addStar);
 
 function planetObjGenerator(size, segments, texture) {
   const objTexture = new THREE.TextureLoader().load(texture);
@@ -78,8 +78,9 @@ function planetObjGenerator(size, segments, texture) {
     new THREE.SphereGeometry(size, segments, segments),
     new THREE.MeshStandardMaterial({
       map: objTexture
-    })
-  )
+    }));
+  obj.clickable = true;
+
   return obj;
 }
 
@@ -91,6 +92,7 @@ const sun = new THREE.Mesh(
     map: sunTexture
   })
 );
+sun.clickable = true;
 sun.position.set(0, 0, 0)
 scene.add(sun);
 
@@ -100,6 +102,7 @@ scene.add(earthObj)
 const earth = planetObjGenerator(6, 64, earthTextureMap)
 earth.position.set(0, 0, 110)
 earthObj.add(earth)
+console.log(earth)
 
 // -- moon
 const moonObj = new THREE.Object3D();
@@ -198,9 +201,11 @@ function onClickEvent(mouse) {
   var intersects = raycaster.intersectObjects(scene.children);
 
   for (var i = 0; i < intersects.length; i++) {
-    cameraLock = intersects[i].object;
-    cameraResetBtn.removeAttribute('hidden');
-    controls.enabled = false;
+    if (intersects[i].object.clickable) {
+      cameraLock = intersects[i].object;
+      cameraResetBtn.removeAttribute('hidden');
+      controls.enabled = false;
+    }
   }
 }
 
@@ -208,7 +213,7 @@ function onMouseClick(event) {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
-  onClickEvent(intersects)
+  onClickEvent(mouse)
 }
 
 function onMobileClick(event) {
