@@ -3,3 +3,12 @@ canvas {
   top: 0;
   left: 0;
 }
+
+.resetCamera{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 50px;
+  width: 80px;
+  height: 80px;
+}

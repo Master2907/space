@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import gsap from 'gsap'
+
 
 import moonTextureMap from './public/moon.jpg'
 import normalTextureMap from './public/normal.png'
@@ -14,14 +16,16 @@ import saturnRingTextureMap from './public/saturn.jpg'
 
 const scene = new THREE.Scene();
 
+// DOM elements 
+const cameraResetBtn = document.querySelector('.resetCamera')
+
 // CAMERA
 var cameraLock = undefined;
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.setZ(130);
-camera.position.setX(130);
-camera.position.setY(130);
-
+camera.position.setZ(150);
+camera.position.setX(150);
+camera.position.setY(150);
 
 // RENDERER
 const renderer = new THREE.WebGLRenderer({
@@ -30,13 +34,11 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-
 renderer.render(scene, camera)
 
-
 // CONTROLS
-const controls = new OrbitControls(camera, renderer.domElement);
-// controls.enablePan = false;
+var controls = new OrbitControls(camera, renderer.domElement);
+controls.enablePan = false;
 controls.minDistance = 40;
 controls.maxDistance = 600;
 
@@ -52,7 +54,6 @@ scene.add(sunLight)
 // HELPERS
 const gridHelper = new THREE.GridHelper(200, 50);
 // scene.add(gridHelper);
-
 
 // Stars generator
 function addStar() {
@@ -88,7 +89,6 @@ const sun = new THREE.Mesh(
   })
 );
 sun.position.set(0, 0, 0)
-
 scene.add(sun);
 
 // -- earth
@@ -97,14 +97,6 @@ scene.add(earthObj)
 const earth = planetObjGenerator(6, 64, earthTextureMap)
 earth.position.set(0, 0, 110)
 earthObj.add(earth)
-
-// const earthCamera = new THREE.Object3D();
-// earth.add(earthCamera);
-// camera.position.set(40,40,40)
-// earthCamera.add(camera)
-
-
-
 
 // -- moon
 const moonObj = new THREE.Object3D();
@@ -123,7 +115,6 @@ mercury.position.set(0, 0, 45)
 mercuryObj.add(mercury)
 
 // -- venus
-
 const venusObj = new THREE.Object3D();
 venusObj.rotateY(-45)
 scene.add(venusObj);
@@ -146,16 +137,69 @@ jupiter.position.set(0, 0, 180);
 jupiterObj.add(jupiter);
 
 
-// earthObj.add(camera)
-// camera.position.set(10, 10, 120)
+// Features
 
-function getPosition(mesh){
-  var position = new THREE.Vector3();
-  position.setFromMatrixPosition(mesh.matrixWorld);
-  return position
+function getCameraPositionDiff(sphere) {
+  const radius = sphere.geometry.parameters.radius
+  return 3 * radius
+}
+
+function animateCamera(p, diff) {
+  gsap.to(camera.position, {
+    x: p.x + diff,
+    y: p.y + diff,
+    z: p.z + diff,
+    duration: 0.5,
+    onUpdate: function () {
+        camera.lookAt(p.x, p.y, p.z)
+    }
+  })
+}
+
+function getCenterPoint(mesh) {
+  var middle = new THREE.Vector3();
+  var geometry = mesh.geometry;
+
+  geometry.computeBoundingBox();
+
+  middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
+  middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
+  middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
+
+  mesh.localToWorld( middle );
+  return middle;
 }
 
 
+//Declare raycaster and mouse variables
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+
+function onMouseClick(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+  
+  raycaster.setFromCamera(mouse, camera);
+  
+  var intersects = raycaster.intersectObjects(scene.children);
+  for (var i = 0; i < intersects.length; i++) {
+    cameraLock = intersects[i].object;
+    cameraResetBtn.removeAttribute('hidden');
+    controls.enabled = false;
+  }
+}
+
+window.addEventListener('click', onMouseClick, false);
+cameraResetBtn.addEventListener('click', () => {
+  cameraLock = undefined;
+  cameraResetBtn.setAttribute('hidden', '');
+  gsap.to(camera.position, {
+    x: 150,
+    y: 150,
+    z: 150,
+  })
+  controls.enabled = true;
+})
 
 // ANIMATIONS
 function animate() {
@@ -163,50 +207,28 @@ function animate() {
 
   sun.rotateY(0.001)
   moonObj.rotateY(0.0012)
-  
+
   earthObj.rotateY(0.003)
   earth.rotateY(0.0365)
-  // earthCamera.rotateY(-0.0365)
-  
+
   mercuryObj.rotateY(0.008)
   mercury.rotateY(0.01)
-  
+
   venusObj.rotateY(0.01)
   venus.rotateY(0.01)
-  
+
   marsObj.rotateY(0.005)
-  
-  jupiterObj.rotateY(0.001)
-  
-  if (cameraLock != undefined){
-    const p = getPosition(cameraLock)
-    camera.position.set(p.x+ 10, p.y + 10, p.z + 10)
+  mars.rotateY(0.01)
+
+  jupiterObj.rotateY(0.002)
+  jupiter.rotateY(0.01)
+
+  if (cameraLock != undefined) {
+    const diff = getCameraPositionDiff(cameraLock);
+    const p = getCenterPoint(cameraLock)
+    animateCamera(p, diff)
   }
-  
-  
+
   renderer.render(scene, camera);
 }
-
-//Declare raycaster and mouse variables
-var raycaster = new THREE.Raycaster();
-var mouse = new THREE.Vector2();
-
-function onMouseClick( event ) {
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
-    raycaster.setFromCamera( mouse, camera );
-
-    var intersects = raycaster.intersectObjects( scene.children );
-    for ( var i = 0; i < intersects.length; i++ ) {
-        cameraLock = intersects[ i ].object;
-        // intersects[ i ].object.material.color.set( 0xff0000 );
-    }
-
-}
-
-window.addEventListener( 'click', onMouseClick, false );
-
 animate()
-
-
