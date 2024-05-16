@@ -116,7 +116,6 @@ earth.add(moonObj)
 const moon = planetObjGenerator(1, 64, moonTextureMap);
 moon.position.set(0, 0, 12)
 moon.nameInfo = 'Moon';
-moon.nameInfo = moon;
 moonObj.add(moon)
 
 
@@ -168,6 +167,7 @@ const saturnRing = new THREE.Mesh(
   new THREE.RingGeometry(13, 16, 64),
   new THREE.MeshStandardMaterial({side: THREE.DoubleSide, map: saturnRingTexture})
 )
+
 
 saturnRing.rotation.x = Math.PI / 2 - 0.5;
 saturnRing.rotation.y = -0.1;
