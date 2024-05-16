@@ -19,6 +19,7 @@ import neptunTextureMap from './public/neptun.jpg'
 const scene = new THREE.Scene();
 // DOM elements 
 const cameraResetBtn = document.querySelector('.resetCamera')
+const objectNameDiv = document.querySelector('.objectName')
 
 // CAMERA
 var cameraLock = undefined;
@@ -56,6 +57,7 @@ scene.add(ambientLight);
 
 const sunLight = new THREE.PointLight(0xffffff, 25000, 10000)
 scene.add(sunLight)
+
 
 // HELPERS
 const gridHelper = new THREE.GridHelper(200, 50);
@@ -103,6 +105,7 @@ const earthObj = new THREE.Object3D();
 scene.add(earthObj)
 const earth = planetObjGenerator(6, 64, earthTextureMap)
 earth.position.set(0, 0, 110)
+earth.nameInfo = 'Earth';
 earthObj.add(earth)
 console.log(earth)
 
@@ -237,6 +240,10 @@ function onClickEvent(mouse) {
     console.log(intersects[i])
     if (intersects[i].object.clickable) {
       cameraLock = intersects[i].object;
+      if (intersects[i].object.nameInfo) {
+        objectNameDiv.querySelector('p').innerHTML = intersects[i].object.nameInfo;
+        objectNameDiv.classList.add('visible');
+      }
       cameraResetBtn.removeAttribute('hidden');
       controls.enabled = false;
     }
@@ -263,6 +270,7 @@ window.addEventListener("touchstart", onMobileClick, false);
 cameraResetBtn.addEventListener('click', () => {
   cameraLock = undefined;
   cameraResetBtn.setAttribute('hidden', '');
+  objectNameDiv.classList.remove('visible');
   gsap.to(camera.position, {
     x: 150,
     y: 150,

@@ -11,3 +11,22 @@ canvas {
   font-size: 25px;
   line-height: 25px;
 }
+
+.objectName{
+  position: absolute;
+  color: #fff;
+  font-size: 20px;
+  background-color: rgba(0, 0, 255, 0.436);
+  min-width: 50px;
+  padding: 0 10px;
+  text-transform: uppercase;
+  border-radius: 10px;
+  outline: 1px solid #ffffff48;
+  transition: 0.3s;
+  opacity: 0;
+}
+.objectName.visible{
+  width: auto;
+  height: auto;
+  opacity: 1;
+}
