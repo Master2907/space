@@ -97,7 +97,8 @@ const sun = new THREE.Mesh(
   })
 );
 sun.clickable = true;
-sun.position.set(0, 0, 0)
+sun.position.set(0, 0, 0);
+sun.nameInfo = 'Sun';
 scene.add(sun);
 
 // -- earth
@@ -114,6 +115,8 @@ const moonObj = new THREE.Object3D();
 earth.add(moonObj)
 const moon = planetObjGenerator(1, 64, moonTextureMap);
 moon.position.set(0, 0, 12)
+moon.nameInfo = 'Moon';
+moon.nameInfo = moon;
 moonObj.add(moon)
 
 
@@ -123,6 +126,7 @@ mercuryObj.rotateY(90)
 scene.add(mercuryObj)
 const mercury = planetObjGenerator(3, 64, mercuryTextureMap);
 mercury.position.set(0, 0, 45)
+mercury.nameInfo = 'Mercury';
 mercuryObj.add(mercury)
 
 // -- venus
@@ -130,7 +134,8 @@ const venusObj = new THREE.Object3D();
 venusObj.rotateY(-45)
 scene.add(venusObj);
 const venus = planetObjGenerator(4, 64, venusTextureMap);
-venus.position.set(0, 0, 75)
+venus.position.set(0, 0, 75);
+venus.nameInfo = 'Venus'
 venusObj.add(venus)
 
 // -- mars
@@ -138,6 +143,7 @@ const marsObj = new THREE.Object3D();
 scene.add(marsObj);
 const mars = planetObjGenerator(4.5, 64, marsTextureMap);
 mars.position.set(0, 0, 145);
+mars.nameInfo = 'Mars';
 marsObj.add(mars);
 
 // -- jupiter
@@ -145,15 +151,16 @@ const jupiterObj = new THREE.Object3D();
 scene.add(jupiterObj);
 const jupiter = planetObjGenerator(10, 64, jupiterTextureMap);
 jupiter.position.set(0, 0, 180);
+jupiter.nameInfo = 'Jupiter';
 jupiterObj.add(jupiter);
 
 
 // -- saturn
 const saturnObj = new THREE.Object3D();
 scene.add(saturnObj)
-
 const saturn = planetObjGenerator(8, 64, saturnTextureMap);
-saturn.position.set(0, 0, 220)
+saturn.position.set(0, 0, 220);
+saturn.nameInfo = 'Saturn'
 saturnObj.add(saturn)
 
 const saturnRingTexture = new THREE.TextureLoader().load(saturnRingTextureMap);
@@ -171,6 +178,7 @@ const uranusObj = new THREE.Object3D();
 scene.add(uranusObj);
 const uranus = planetObjGenerator(5, 64, uranusTextureMap);
 uranus.position.set(0, 0, 260);
+uranus.nameInfo = 'Uranus'
 uranusObj.add(uranus);
 
 // -- neptun
@@ -178,6 +186,7 @@ const neptunObj = new THREE.Object3D();
 scene.add(neptunObj);
 const neptun = planetObjGenerator(9, 64, neptunTextureMap);
 neptun.position.set(0, 0, 300);
+neptun.nameInfo = 'Neptun';
 neptunObj.add(neptun);
 
 // Lines
